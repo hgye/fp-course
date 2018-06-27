@@ -92,7 +92,7 @@ product ::
   List Int
   -> Int
 product =
-  foldRight (*) 0 
+  foldRight (*) 1
 
 -- | Sum the elements of the list.
 --
