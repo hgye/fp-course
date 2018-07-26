@@ -336,7 +336,7 @@ mapA ::
   List a -> f (List b)
 mapA g = h
   where h Nil = pure Nil
-        h (x :. xs) = lift2 (\ x y -> ((x :. Nil) ++ y)) (g x) (h xs)
+        h (x :. xs) = lift2 (\ y z -> ((y :. Nil) ++ z)) (g x) (h xs)
 
 -- | Replicate an effect a given number of times.
 --
