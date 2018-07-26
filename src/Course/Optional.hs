@@ -95,8 +95,9 @@ optional ::
   -> b
   -> Optional a
   -> b
-optional =
-  error "todo: Course.Optional#optional"
+optional _ x Empty = x
+optional f _ (Full x) = f x
+  --error "todo: Course.Optional#optional"
 
 
 applyOptional :: Optional (a -> b) -> Optional a -> Optional b
