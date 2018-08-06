@@ -341,7 +341,7 @@ log1 ::
   l
   -> a
   -> Logger l a
-log1 l a = Logger (l :. Nil) a
+log1 l  = Logger (l :. Nil)
   -- error "todo: Course.StateT#log1"
 
 -- | Remove all duplicate integers from a list. Produce a log as you go.
@@ -359,25 +359,31 @@ log1 l a = Logger (l :. Nil) a
 -- >>> distinctG $ listh [1,2,3,2,6,106]
 -- Logger ["even number: 2","even number: 2","even number: 6","aborting > 100: 106"] Empty
 
--- ff3 :: Ord a => a-> StateT (S.Set (Logger Chars a)) OptionalT Bool
--- ff3 x = StateT f
---   where f s = case x of
---           > 100 -> log1 "aborting > 100: " Empty
---           even -> log1 "even number: " x
+ff3 :: (Integral a, Show a) =>
+  a -> StateT (S.Set a) (OptionalT (Logger Chars)) Bool
+ff3 x = StateT f
+  where f s = OptionalT go
+          where go = case x of
+                       n | n > 100 -> log1 ("aborting > 100: " ++ show' x) Empty
+                       n | S.member n s && even n
+                           -> log1 ("even number: " ++ show' x) (Full (False, s))
+                       n | S.member n s -> pure (Full (False, s))
+                       n | S.notMember n s && even n
+                           -> log1 ("even number: " ++ show' x) (Full (True, S.insert x s))
+                       _ -> pure (Full (True, S.insert x s))
 
--- ff3 :: Integral a => a -> StateT (S.Set (Logger Chars a)) OptionalT (Logger Chars Bool)
--- ff3 x = StateT f
---   where f s = OptionalT go
---         go 
---           case x of
---           > 100 -> 
+        --   OptionalT go
+        -- go = case S.member x of
+        --   True -> log1 "" (Full (False, s))
+        --   n | n > 100 ->
+        --   n | even n && (S.notMember n)-> (log1 "even number: " ++ show' x)
 
 distinctG ::
   (Integral a, Show a) =>
   List a
   -> Logger Chars (Optional (List a))
-distinctG =
-  error "todo: Course.StateT#distinctG"
+distinctG l = runOptionalT $ evalT (filtering ff3 l) S.empty
+  -- error "todo: Course.StateT#distinctG"
 
 onFull ::
   Applicative f =>
