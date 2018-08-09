@@ -358,7 +358,6 @@ log1 l  = Logger (l :. Nil)
 --
 -- >>> distinctG $ listh [1,2,3,2,6,106]
 -- Logger ["even number: 2","even number: 2","even number: 6","aborting > 100: 106"] Empty
-
 ff3 :: (Integral a, Show a) =>
   a -> StateT (S.Set a) (OptionalT (Logger Chars)) Bool
 ff3 x = StateT f
@@ -371,12 +370,6 @@ ff3 x = StateT f
                        n | S.notMember n s && even n
                            -> log1 ("even number: " ++ show' x) (Full (True, S.insert x s))
                        _ -> pure (Full (True, S.insert x s))
-
-        --   OptionalT go
-        -- go = case S.member x of
-        --   True -> log1 "" (Full (False, s))
-        --   n | n > 100 ->
-        --   n | even n && (S.notMember n)-> (log1 "even number: " ++ show' x)
 
 distinctG ::
   (Integral a, Show a) =>
