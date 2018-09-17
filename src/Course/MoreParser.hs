@@ -426,5 +426,6 @@ betweenSepbyComma ::
   -> Parser a
   -> Parser (List a)
 betweenSepbyComma c1 c2 p =
-  sepby (betweenCharTok c1 c2 p) commaTok
+  betweenCharTok c1 c2 (sepby (tok p) commaTok)
+  -- sepby (betweenCharTok c1 c2 p) commaTok
   --error "todo: Course.MoreParser#betweenSepbyComma"
