@@ -272,8 +272,9 @@ findLeft f (ListZipper l v r) = case fr of
         fr = (snd . break f) l
  -- error "todo: Course.ListZipper#findLeft"
 
--- | Seek to the right for a location matching a predicate, starting from the
--- current one.
+-- | Seek to the right for a location matching a predicate, excluding the
+-- focus.
+>>>>>>> data61/master
 --
 -- /Tip:/ Use `break`
 --

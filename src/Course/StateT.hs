@@ -72,7 +72,7 @@ instance Monad f => Applicative (StateT s f) where
     where g x = pure (s, x)
     -- error "todo: Course.StateT pure#instance (StateT s f)"
   (<*>) ::
-   StateT s f (a -> b)
+    StateT s f (a -> b)
     -> StateT s f a
     -> StateT s f b
   (<*>) sab sa = StateT g
@@ -129,6 +129,9 @@ runState' sa s = runExactlyOne $ runStateT sa s
   -- error "todo: Course.StateT#runState'"
 
 -- | Run the `StateT` seeded with `s` and retrieve the resulting state.
+--
+-- >>> execT (StateT $ \s -> Full ((), s + 1)) 2
+-- Full 3
 execT ::
   Functor f =>
   StateT s f a
@@ -137,7 +140,10 @@ execT ::
 execT sa s = snd <$> runStateT sa s
   -- error "todo: Course.StateT#execT"
 
--- | Run the `State` seeded with `s` and retrieve the resulting state.
+-- | Run the `State'` seeded with `s` and retrieve the resulting state.
+--
+-- >>> exec' (state' $ \s -> ((), s + 1)) 2
+-- 3
 exec' ::
   State' s a
   -> s
@@ -146,6 +152,9 @@ exec' sa s = snd $ runState' sa s
   -- error "todo: Course.StateT#exec'"
 
 -- | Run the `StateT` seeded with `s` and retrieve the resulting value.
+--
+-- >>> evalT (StateT $ \s -> Full (even s, s + 1)) 2
+-- Full True
 evalT ::
   Functor f =>
   StateT s f a
@@ -155,6 +164,9 @@ evalT sa s = fst <$> runStateT sa s
   -- error "todo: Course.StateT#evalT"
 
 -- | Run the `State'` seeded with `s` and retrieve the resulting value.
+--
+-- >>> eval' (state' $ \s -> (even s, s + 1)) 5
+-- False
 eval' ::
   State' s a
   -> s
@@ -238,6 +250,10 @@ data OptionalT f a =
 -- >>> runOptionalT $ (+1) <$> OptionalT (Full 1 :. Empty :. Nil)
 -- [Full 2,Empty]
 instance Functor f => Functor (OptionalT f) where
+  (<$>) ::
+    (a -> b)
+    -> OptionalT f a
+    -> OptionalT f b
   (<$>) h o = OptionalT g
     where g =  lift1 h <$> runOptionalT o
     -- where g = ((<$>) h) <$> (runOptionalT o)
@@ -271,6 +287,10 @@ instance Monad f => Applicative (OptionalT f) where
   pure x = OptionalT g
     where g = pure . pure $ x
     -- error "todo: Course.StateT pure#instance (OptionalT f)"
+  (<*>) ::
+    OptionalT f (a -> b)
+    -> OptionalT f a
+    -> OptionalT f b
   (<*>) oab oa = OptionalT g
     where g = onFull go =<< runOptionalT oab
           go h = (<$>) h <$> runOptionalT oa

@@ -64,7 +64,7 @@ tok p = p <* spaces
 --
 -- >>> isErrorResult (parse (charTok 'a') "dabc")
 -- True
--- 
+--
 -- /Tip:/ Use `tok` and `is`.
 charTok ::
   Char
@@ -79,7 +79,7 @@ charTok = tok . is
 --
 -- >>> isErrorResult( parse commaTok "1,23")
 -- True
--- 
+--
 -- /Tip:/ Use `charTok`.
 commaTok ::
   Parser Char
@@ -243,7 +243,7 @@ betweenCharTok c1 c2 p =
 
 -- | Write a function that parses 4 hex digits and return the character value.
 --
--- /Tip:/ Use `readHex`, `isHexDigit`, `replicateA`, `satisfy` and the monad instance.
+-- /Tip:/ Use `readHex`, `isHexDigit`, `replicateA`, `satisfy`, `chr` and the monad instance.
 --
 -- >>> parse hex "0010"
 -- Result >< '\DLE'
