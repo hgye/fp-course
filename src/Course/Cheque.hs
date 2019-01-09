@@ -323,5 +323,47 @@ fromChar _ =
 dollars ::
   Chars
   -> Chars
-dollars =
-  error "todo: Course.Cheque#dollars"
+dollars s1 =
+  let (s, c) = break (== '.') $ filter (\x -> isNumber x || x == '.') s1
+      l = zip (digit3Right s) illion
+      c1 = digit3Right $ (take 2 . drop 1) c
+  in
+    foldRight f "" l ++ " dollars and " ++ 
+    (foldRight g "" c1 ++ " cents")
+    where f (d3, i) s = s ++ " " ++ showDigit3 d3 ++ " " ++ i
+          g c s = s ++ " " ++ showDigit3 c
+  -- error "todo: Course.Cheque#dollars"
+
+-- readDollars :: RealFrac a => Chars -> Optional a
+-- readDollars = readFloat . filter (\x -> isNumber x || x == '.')
+
+digit3Right :: List Char -> List (Optional Digit3)
+digit3Right Nil = Nil
+digit3Right l =
+  let -- l' = filter (\x -> isNumber x || x == '.') l
+      a = (take 3 . reverse) l
+      b = (drop 3 . reverse) l
+      toDigit3 (x1 :. Nil) =  D1 <$> (fromChar x1)
+      toDigit3 (x1 :. x2 :. Nil) = D2 <$> (fromChar x1) <*> (fromChar x2)
+      toDigit3 (x1 :. x2 :. x3 :. Nil) = D3 <$> (fromChar x1) <*> (fromChar x2) <*> (fromChar x3)
+      toDigit3 _ = Empty
+  in
+    toDigit3 (reverse a) :. (digit3Right (reverse b))
+
+showDigit3 :: Optional Digit3 -> Chars
+showDigit3 Empty = ""
+showDigit3 (Full (D1 d)) = showDigit d
+showDigit3 (Full (D2 d1 d2)) = (f d1) ++ (showDigit3 $ Full (D1 d2))
+  where f Zero = ""
+        f One = "ten-"
+        f Two = "twenty-"
+        f Three = "thirty-"
+        f Four = "forty-"
+        f Five = "fifty-"
+        f Six = "sixty-"
+        f Seven = "seventy-"
+        f Eight = "eighty-"
+        f Nine = "ninty-"
+showDigit3 (Full (D3 d1 d2 d3)) = f d1 ++ (showDigit3 $ Full (D2 d2 d3))
+  where f Zero = ""
+        f d =  showDigit d ++ " hundred and "
